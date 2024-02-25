@@ -1,0 +1,2 @@
+TOKEN = "6675166107:AAFW33-NEENEVj0gmdUBwyVQ9uQLCbqvKFI"
+# TOKEN = "Insert your API-key"
