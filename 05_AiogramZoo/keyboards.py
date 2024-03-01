@@ -18,8 +18,8 @@ def start_keyboard(DEBUG: bool = False):
         # ],
     ]
     if DEBUG:
-        buttons.append([types.InlineKeyboardButton(text="get_data", callback_data="get_data")])
-        buttons.append([types.InlineKeyboardButton(text="get_result", callback_data="get_result")])
+        buttons.append([types.InlineKeyboardButton(text="DEBUG: get_data", callback_data="get_data")])
+        buttons.append([types.InlineKeyboardButton(text="DEBUG: get_result", callback_data="get_result")])
     keyboard = types.InlineKeyboardMarkup(inline_keyboard=buttons)
     return keyboard
 
