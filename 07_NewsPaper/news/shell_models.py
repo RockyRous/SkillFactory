@@ -1,15 +1,7 @@
-# Создать двух пользователей (с помощью метода User.objects.create_user('username')).
-# Создать два объекта модели Author, связанные с пользователями.
-# Добавить 4 категории в модель Category.
-# Добавить 2 статьи и 1 новость.
-# Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
-# Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
-# Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
-# Обновить рейтинги пользователей.
-# Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
-# Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
-# Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
 
+# use in NewsPaper/
+# python manage.py makemigrations
+# python manage.py migrate
 # python manage.py shell
 
 from django.contrib.auth.models import User
@@ -40,10 +32,10 @@ post2.category.add(category3, category4)
 news1.category.add(category1, category3)
 
 # Создаем комментарии
-comment1 = Comment.objects.create(post=post1, user=author1, text='Comment 1 for post 1')
-comment2 = Comment.objects.create(post=post1, user=author2, text='Comment 2 for post 1')
-comment3 = Comment.objects.create(post=post2, user=author1, text='Comment 1 for post 2')
-comment4 = Comment.objects.create(post=news1, user=author2, text='Comment for news 1')
+comment1 = Comment.objects.create(post=post1, user=author1.user, text='Comment 1 for post 1')
+comment2 = Comment.objects.create(post=post1, user=author2.user, text='Comment 2 for post 1')
+comment3 = Comment.objects.create(post=post2, user=author1.user, text='Comment 1 for post 2')
+comment4 = Comment.objects.create(post=news1, user=author2.user, text='Comment for news 1')
 
 # Применяем функции like() и dislike()
 post1.like()
@@ -66,7 +58,7 @@ print(f"Лучшая статья:\nДата добавления: {best_post.da
 # Выводим все комментарии к лучшей статье
 comments_to_best_post = Comment.objects.filter(post=best_post)
 for comment in comments_to_best_post:
-    print(f"Дата: {comment.date_add}, Пользователь: {comment.user.user.username}, Рейтинг: {comment.rating}, Текст: {comment.text}")
+    print(f"Дата: {comment.date_add}, Пользователь: {comment.user.username}, Рейтинг: {comment.rating}, Текст: {comment.text}")
 
 
-# Могут быть ошибки из-за имеющихся в бд юзерах и прочих (я почистил)
+#

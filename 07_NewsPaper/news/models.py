@@ -14,7 +14,7 @@ class Author(models.Model):
         return (self.post_set.aggregate(total=models.Sum(models.F('rating') * 3))['total'] or 0)
 
     def calculate_comment_rating(self):
-        return (self.comment_set.aggregate(total=models.Sum('rating'))['total'] or 0)
+        return (self.user.comment_set.aggregate(total=models.Sum('rating'))['total'] or 0)
 
     def calculate_post_comment_rating(self):
         return (self.post_set.aggregate(total=models.Sum('comment__rating'))['total'] or 0)
@@ -61,7 +61,7 @@ class PostCategory(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE)
-    user = models.ForeignKey(Author, on_delete=models.CASCADE)  # todo: change name to 'author'
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()
     date_add = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(default=0)
