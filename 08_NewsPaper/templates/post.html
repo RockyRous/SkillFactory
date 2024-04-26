@@ -1,0 +1,22 @@
+<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
+{% extends 'flatpages/default.html' %}
+
+{% load my_filters %}
+
+<!-- Название у нас будет Post -->
+{% block title %}
+Post
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам пост, идентификатор которого был передан в url -->
+{% block content %}
+<div>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.date_add|date:'M d Y' }}</p>
+    <p>{{ post.text|censor }}</p>
+    <hr>
+    <p>Автор: {{ post.author }}</p>
+    <p>Тип публикации: {{ post.type }}</p>
+    <p>Рейтинг: {{ post.rating }}</p>
+</div>
+{% endblock content %}
