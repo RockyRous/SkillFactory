@@ -11,7 +11,7 @@ Post
 <!-- В контенте на странице мы выводим сам пост, идентификатор которого был передан в url -->
 {% block content %}
 <div>
-    <h1>{{ post.title }}</h1>
+    <h1>{{ post.title|censor }}</h1>
     <p>{{ post.date_add|date:'M d Y' }}</p>
     <p>{{ post.text|censor }}</p>
     <hr>
