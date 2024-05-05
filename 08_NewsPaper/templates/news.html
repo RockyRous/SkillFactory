@@ -27,9 +27,9 @@ News
            product — переменная цикла, т.е. наш товар полученный из списка -->
            {% for one_news in news %}
            <tr>
-               <td><a href="{{ one_news.id }}">{{ one_news.title }}</a></td>
+               <td><a href="{{ one_news.id }}">{{ one_news.title|censor }}</a></td>
                <td>{{ one_news.date_add|date:'M d Y' }}</td>
-               <td>{{ one_news.text|truncatewords:20|censor }}</td>
+               <td>{{ one_news.text|truncatechars:20|censor }}</td>
            </tr>
            {% endfor %}
 
