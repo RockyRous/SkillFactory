@@ -1,0 +1,17 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h2>Страница авторизованного пользователя {{request.user.username}}</h2>
+<div> Здесь может содержаться персональная информация для каждого пользователя </div>
+
+
+{% if is_not_author %}
+<button> <a href="sign/upgrade/">Стать автором</a> </button>
+{% endif %}
+
+<!--<button> <a href="sign/logout/">Выйти</a> </button>-->
+<form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Выйти</button>
+</form>
+{% endblock %}
