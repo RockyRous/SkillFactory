@@ -1,10 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Post
+from .models import Post, Category
 
 
 class NewsForm(forms.ModelForm):
+    category = forms.ModelMultipleChoiceField(queryset=Category.objects.all(), widget=forms.CheckboxSelectMultiple)
     class Meta:
         model = Post
         fields = [

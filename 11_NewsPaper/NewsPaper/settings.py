@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,12 +40,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'news',
+    # main
+    'news.apps.NewsConfig',
+
     'accounts',
     'simpleapp',
     'django_filters',
     'sign',
     'protect',
+
+    # Периодические задачи
+    'django_apscheduler',
 
     # Allauth
     'allauth',
@@ -62,6 +68,12 @@ AUTHENTICATION_BACKENDS = [
     # `allauth` specific authentication methods, such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
+
+# Периодические задачи
+# формат даты, которую будет воспринимать наш задачник (вспоминаем модуль по фильтрам)
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -94,14 +106,15 @@ TEMPLATES = [
 ]
 
 LOGIN_URL = '/accounts/login/'
-# LOGIN_URL = 'sign/login/'
 LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_CONFIRM_EMAIL_ON_GET = False  # (тру) позволит избежать дополнительных действий и активирует аккаунт сразу, как только мы перейдём по ссылке
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1  # количество дней, в течение которых будет доступна ссылка на подтверждение регистрации и т. д.
+# ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_FORMS = {'signup': 'sign.models.BasicSignupForm'}
 
 WSGI_APPLICATION = 'NewsPaper.wsgi.application'
@@ -114,12 +127,26 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         'APP': {
-            'client_id': '123',
-            'secret': '123',
+            'client_id': config.CLIENT_ID,
+            'secret': config.SECRET,
             'key': ''
         }
     }
 }
+
+# Email
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Это позволит выводить письма в консоль, а не отправлять их. Если письма появляются в консоли, то проблема может быть связана с настройками SMTP
+# EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'  # Сохраняет в файл
+# EMAIL_FILE_PATH = '/tmp'  # Директория для хранения писем
+
+EMAIL_HOST = 'smtp.yandex.ru'  # адрес сервера Яндекс-почты для всех один и тот же
+EMAIL_PORT = 465  # порт smtp сервера тоже одинаковый
+EMAIL_HOST_USER = 'django.emailsender'  # ваше имя пользователя, например, если ваша почта user@yandex.ru, то сюда надо писать user, иными словами, это всё то что идёт до собаки
+EMAIL_HOST_PASSWORD = 'laszsdjmhkuoscoe'  # пароль от приложения
+# EMAIL_HOST_PASSWORD = 'DjangoEmail'  # пароль от почты
+EMAIL_USE_SSL = True  # Яндекс использует ssl, подробнее о том, что это, почитайте в дополнительных источниках, но включать его здесь обязательно
+# EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER + '@yandex.ru'  # здесь указываем уже свою ПОЛНУЮ почту, с которой будут отправляться письма
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

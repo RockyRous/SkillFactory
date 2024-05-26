@@ -39,7 +39,10 @@
                <td>{{ new.author.user.username }}</td>
                <td>{{ new.date_add|date:'d.m.Y' }}</td>
                <td>{{ new.text|truncatechars:20|censor }}</td>
-               <td>{{ new.type }}</td>
+<!--               <td>{{ new.category }}</td>-->
+               <td>{% for category in new.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</td>
            </tr>
            {% endfor %}
 

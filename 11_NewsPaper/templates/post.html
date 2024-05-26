@@ -1,9 +1,6 @@
-<!--  наследуемся от шаблона default.html, который мы создавали для flatpages -->
 {% extends 'flatpages/default.html' %}
-
 {% load my_filters %}
 
-<!-- Название у нас будет Post -->
 {% block title %}
 Post
 {% endblock title %}
@@ -17,8 +14,28 @@ Post
     <hr>
     <p>Автор: {{ post.author }}</p>
     <p>Тип публикации: {{ post.type }}</p>
+    <p>Категория публикации: {% for category in post.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>
     <p>Рейтинг: {{ post.rating }}</p>
 </div>
+
+<!-- Кнопка подписки на категорию -->
+{% if user.is_authenticated %}
+    {% for category in post.category.all %}
+        <div>
+            {% if user in category.subscribers.all %}
+                <p>Вы подписаны на категорию {{ category.name }}</p>
+            {% else %}
+                <form method="post" action="{% url 'subscribe_to_category' category.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Подписаться на {{ category.name }}</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}
+
 <hr>
 <tr>
    <td><a href="{{ post.id }}/delete">delete</a></td>

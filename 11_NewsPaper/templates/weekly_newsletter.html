@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Новые статьи в категории {{ category.name }}</title>
+</head>
+<body>
+    <h1>Новые статьи в категории {{ category.name }} за неделю</h1>
+    <ul>
+    {% for post in posts %}
+        <li><a href="url_to_post/{{ post.id }}">{{ post.title }}</a></li>
+        <li><a href="http://127.0.0.1:8000/news/{{ post.id }}">{{ post.title }}</a></li>
+    {% endfor %}
+    </ul>
+</body>
+</html>

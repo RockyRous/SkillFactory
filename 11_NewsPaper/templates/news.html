@@ -31,7 +31,9 @@ News
                <td><a href="{{ one_news.id }}">{{ one_news.title|censor }}</a></td>
                <td>{{ one_news.date_add|date:'M d Y' }}</td>
                <td>{{ one_news.text|truncatechars:20|censor }}</td>
-               <td>{{ one_news.type }}</td>
+               <td>{% for category in one_news.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</td>
            </tr>
            {% endfor %}
 
