@@ -49,41 +49,64 @@ def notifier(instance_key):
 
 @shared_task
 def weekly_update():
-    print('Weekly update task executed')
-    end_date = timezone.now()
-    start_date = end_date - timedelta(days=7)
+    logger.info('Weekly update task started')
+    print('Weekly update task started')
+    try:
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
 
-    for category in Category.objects.all():
-        posts_last_week = Post.objects.filter(
-            Q(categories=category) & Q(post_date__gte=start_date, post_date__lte=end_date)
-        )
-
-        if not posts_last_week:
-            continue
-
-        subject = f'Обновления в категории "{category.category}" за неделю'
-
-        html_content = render_to_string(
-            'weekly_update.html',
-            {
-                'category': category.category,
-                'news': posts_last_week,
-            }
-        )
-
-        text_content = strip_tags(html_content)
-
-        recipients = list(category.subscribers.all().values_list('email', flat=True))
-        if recipients:
-            print(f'Sending email to {recipients}')
-            msg = EmailMultiAlternatives(
-                subject=subject,
-                body=text_content,
-                from_email='NewsPortal <django.emailsender@yandex.ru>',
-                to=recipients
+        for category in Category.objects.all():
+            logger.info(f'Processing category: {category}')
+            print(f'Processing category: {category}')
+            posts_last_week = Post.objects.filter(
+                Q(category=category) & Q(date_add__gte=start_date, date_add__lte=end_date)
             )
-            msg.attach_alternative(html_content, "text/html")
-            msg.send()
-            print('Email sent')
-        else:
-            print('No recipients found')
+
+            if not posts_last_week.exists():
+                logger.info(f'No posts found for category: {category}')
+                print(f'No posts found for category: {category}')
+                continue
+
+            subject = f'Обновления в категории "{category}" за неделю'
+
+            try:
+                html_content = render_to_string(
+                    'weekly_update.html',
+                    {
+                        'category': category,
+                        'news': posts_last_week,
+                    }
+                )
+            except Exception as e:
+                logger.error(f'Error rendering template: {e}', exc_info=True)
+                print(f'Error rendering template: {e}')
+                continue
+
+            text_content = strip_tags(html_content)
+
+            recipients = list(category.subscribers.all().values_list('email', flat=True))
+            if recipients:
+                logger.info(f'Sending email to: {recipients}')
+                print(f'Sending email to: {recipients}')
+                try:
+                    msg = EmailMultiAlternatives(
+                        subject=subject,
+                        body=text_content,
+                        from_email='django.emailsender@yandex.ru',
+                        to=recipients
+                    )
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+                    logger.info('Email sent successfully')
+                    print('Email sent successfully')
+                except Exception as e:
+                    logger.error(f'Error sending email: {e}', exc_info=True)
+                    print(f'Error sending email: {e}')
+            else:
+                logger.info('No recipients found')
+                print('No recipients found')
+    except Exception as e:
+        logger.error(f'Error in weekly_update task: {e}', exc_info=True)
+        print(f'Error in weekly_update task: {e}')
+    logger.info('Weekly update task finished')
+    print('Weekly update task finished')
