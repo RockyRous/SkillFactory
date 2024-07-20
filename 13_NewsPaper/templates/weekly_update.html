@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Еженедельный дайджест</title>
+</head>
+<body>
+    <h2>Вот, что изменилось в твоем любимом разделе за неделю</h2>
+    <hr>
+    <br>
+    <ol>
+        {% for post in news %}
+        <li>
+            <h3>{{ post.title }}</h3>
+            <i>{{ post.post_date|date:'M d Y' }}</i>
+            <p>{{ post.text|truncatechars:50 }}</p>
+            <p><a href="http://127.0.0.1:8000/news/{{post.pk}}">Читать полностью</a></p>
+            <br>
+        </li>
+        {% endfor %}
+    </ol>
+</body>
+</html>

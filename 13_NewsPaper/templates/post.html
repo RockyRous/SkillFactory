@@ -1,0 +1,46 @@
+{% extends 'flatpages/default.html' %}
+{% load my_filters %}
+
+{% block title %}
+Post
+{% endblock title %}
+
+<!-- В контенте на странице мы выводим сам пост, идентификатор которого был передан в url -->
+{% block content %}
+<div>
+    <h1>{{ post.title|censor }}</h1>
+    <p>{{ post.date_add|date:'M d Y' }}</p>
+    <p>{{ post.text|censor }}</p>
+    <hr>
+    <p>Автор: {{ post.author }}</p>
+    <p>Тип публикации: {{ post.type }}</p>
+    <p>Категория публикации: {% for category in post.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</p>
+    <p>Рейтинг: {{ post.rating }}</p>
+</div>
+
+<!-- Кнопка подписки на категорию -->
+{% if user.is_authenticated %}
+    {% for category in post.category.all %}
+        <div>
+            {% if user in category.subscribers.all %}
+                <p>Вы подписаны на категорию {{ category.name }}</p>
+            {% else %}
+                <form method="post" action="{% url 'subscribe_to_category' category.id %}">
+                    {% csrf_token %}
+                    <button type="submit">Подписаться на {{ category.name }}</button>
+                </form>
+            {% endif %}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<hr>
+<tr>
+   <td><a href="{{ post.id }}/delete">delete</a></td>
+   <td><a href="{{ post.id }}/edit">update</a></td>
+   <td><a href="/news/">back</a></td>
+</tr>
+
+{% endblock content %}

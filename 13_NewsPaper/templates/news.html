@@ -1,0 +1,65 @@
+{% extends 'flatpages/default.html' %}
+
+{% load my_filters %}
+{% load custom_tags %}
+
+{% block title %}
+News
+{% endblock title %}
+
+{% block content %}
+   <h1>Новости</h1>
+<!--   <h3>{{ time_now|date:'M d Y' }}</h3>-->
+    <h3>{% current_time '%b %d %Y' %}</h3>
+    <h3>Count news: {{ news|length }}</h3>
+   <hr>
+   {% if news %}
+       <table>
+           <tr>
+               <td><b>Заголовок</b></td>
+               <td><b>Дата</b></td>
+               <td><b>Тизер</b></td>
+               <td><b>Категория</b></td>
+           </tr>
+
+           <!-- Для каждого товара будете генерироваться новая строчка,
+           т.е. новый HTML код, который указан в теле цикла.
+           При этом сам цикл работает точно так же, как и в Python.
+           product — переменная цикла, т.е. наш товар полученный из списка -->
+           {% for one_news in news %}
+           <tr>
+               <td><a href="{{ one_news.id }}">{{ one_news.title|censor }}</a></td>
+               <td>{{ one_news.date_add|date:'M d Y' }}</td>
+               <td>{{ one_news.text|truncatechars:20|censor }}</td>
+               <td>{% for category in one_news.category.all %}
+                {{ category.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}</td>
+           </tr>
+           {% endfor %}
+
+       </table>
+   {% else %}
+       <h2>Новостей нет!</h2>
+   {% endif %}
+
+<!--Пагинация-->
+   {% if page_obj.has_previous %}
+       <a href="?{% url_replace page=1 %}">1</a>
+       {% if page_obj.previous_page_number != 1 %}
+           ...
+           <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+       {% endif %}
+   {% endif %}
+
+   {# Информация о текущей странице #}
+   {{ page_obj.number }}
+
+   {# Информация о следующих страницах #}
+   {% if page_obj.has_next %}
+       <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+       {% if paginator.num_pages != page_obj.next_page_number %}
+           ...
+           <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+{% endblock content %}
